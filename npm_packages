@@ -1,0 +1,12 @@
+# Browserify is required.
+# You can install it globally and delete from here.
+#npm 'browserify', require: false, development: true
+
+# Add some npm packages
+npm 'redux', '3.3.1'
+npm 'react-redux'
+npm 'redux-form'
+npm 'react-file-upload'
+npm 'react-s3-uploader'
+npm 'react-nested-form'
+npm 'es6'
