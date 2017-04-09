@@ -8,14 +8,19 @@ const store = Redux.createStore(ReactReduxForm.combineForms({
   user: initialUserState,
 }), Redux.applyMiddleware(thunk));
 
+
+var array1 = ["first_name", "last_name", "email", "avatar", "address.line1", "address.line2", "address.city", "address.state", "address.country"]
+
+var array2 = ["text", "text", "email", "file", "text", "text", "address.city", "text", "text"];
+
+
 getModel = function(item){
-  var array = ["first_name", "last_name", "email", "avatar", "address.line1", "address.line2", "address.city", "address.state", "address.country"]
-  return "user." + array[item];
+  return "user." + array1[item];
 }
 
 getControl = function(item){
-  var array = ["text", "text", "email", "file", "text", "text", "address.city", "text", "text"]
-  return array[item];
+
+  return array2[item];
 }
 
 appendFormData = function(formData, values, parent){
@@ -38,9 +43,21 @@ appendFormData = function(formData, values, parent){
     }
   }
 }
+
+var InputItem = React.createClass({
+  render: function(){
+    return(
+      <div className="form-group">
+        <label className="control-label">Name </label>
+        <ReactReduxForm.Control type={getControl(this.props.item)} className="form-control my-form-control" model={getModel(this.props.item)} placeholder={getModel(this.props.item)}/>
+        <a href="javascript:void(0)" className="btn btn-danger" onClick={() => this.props.click(this.props.item)}><i className="fa fa-remove"></i></a>
+      </div>
+    )
+  }
+})
 var Demo = React.createClass({
     getInitialState: function() {
-        //this.removeRecord = this.removeRecord.bind(this);
+        this.removeRecord = this.removeRecord.bind(this);
         return {inputs:[0,1]};
     },
     handleSubmit: function(values) {
@@ -54,22 +71,23 @@ var Demo = React.createClass({
       Axios.post("/upload", formData, config)
     },
     removeRecord: function(index){
-        this.state.inputs.splice(index, 1);
-        this.setState({ inputs: this.state.inputs},function(){
-            return;
-        });
+      console.log(index)
+      this.state.inputs.splice(index, 1);
+      this.setState({ inputs: this.state.inputs},function(){
+          return;
+      });
 
     },
     appendInput: function(e) {
         e.preventDefault();
-        var newInput = this.state.inputs.length;
-
-        this.setState({ inputs: this.state.inputs.concat(newInput)},function(){
-            return;
-        });
-
-        //$('.online-est').next('.room-form').remove()
-
+        var i = 0;
+        while(i < array1.length){
+          if(!this.state.inputs.includes(i)){
+            this.setState({ inputs: this.state.inputs.concat(i)});
+            break;
+          }
+          i++;
+        }
     },
     render: function() {
         var self = this;
@@ -80,13 +98,9 @@ var Demo = React.createClass({
               <ReactReduxForm.Form id='myform' model="user" onSubmit={this.handleSubmit}>
               <br/>
               {this.state.inputs.map(function(item){
-                  return (
-                          <div className="form-group" id={item} key={item}>
-                            <label className="control-label">Name </label>
-                            <ReactReduxForm.Control type={getControl(item)} className="form-control my-form-control" model={getModel(item)} placeholder={getModel(item)}/>
-                            <a href="javascript:void(0)" className="btn btn-danger" onClick={self.removeRecord}><i className="fa fa-remove"></i></a>
-                          </div>
-                  )
+                return (
+                  <InputItem item={item} key={item} click={self.removeRecord}/>
+                )
 
              })}
              <button type="submit" className='btn btn-primary'>Save All</button>
