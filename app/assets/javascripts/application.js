@@ -12,11 +12,14 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require twitter/bootstrap
 //= require jquery.serialize.js
 //= require turbolinks
 //= require react
 //= require react_ujs
 //= require npm-dependencies
+//= require react.redux.form
+//= require redux-thunk.min
 //= require components
 
 //= require_tree .

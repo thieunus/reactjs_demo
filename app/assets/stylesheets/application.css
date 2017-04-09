@@ -13,3 +13,9 @@
  *= require_tree .
  *= require_self
  */
+
+.form-control.my-form-control {
+  width: 70%;
+  margin-right: 5px;
+  display: inline-block;
+}

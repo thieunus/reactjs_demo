@@ -1,11 +1,22 @@
+const initialUserState = {
 
-reducer = Redux.combineReducers({
-  form: ReduxForm.reducer // mounted under "form"
-})
-
-store = Redux.createStore(reducer)
+};
+const thunk = ReduxThunk.default;
 
 
+const store = Redux.createStore(ReactReduxForm.combineForms({
+  user: initialUserState,
+}), Redux.applyMiddleware(thunk));
+
+getModel = function(item){
+  var array = ["first_name", "last_name", "email", "avatar", "address.line1", "address.line2", "address.city", "address.state", "address.country"]
+  return "user." + array[item];
+}
+
+getControl = function(item){
+  var array = ["text", "text", "email", "file", "text", "text", "address.city", "text", "text"]
+  return array[item];
+}
 var Demo = React.createClass({
     getInitialState: function() {
         //this.removeRecord = this.removeRecord.bind(this);
@@ -15,18 +26,8 @@ var Demo = React.createClass({
     //     super(props);
     //     this.removeRecord = this.removeRecord.bind(this);
     // },
-    handleSubmit: function(e) {
-        e.preventDefault();
-        var self = this;
-        //console.log(this.refs)
-        console.log(e);
-        //console.log( Object.keys(this.refs).map(function(ref){
-            //console.log(ref)
-        //    self.refs[ref].value;
-            //ReactDOM.findDOMNode(ref).value
-        //}) );
-        console.log($('form#myform').serializeJSON());
-        return false;
+    handleSubmit: function(v) {
+        console.log(v);
     },
     removeRecord: function(index){
         e.preventDefault();
@@ -49,66 +50,29 @@ var Demo = React.createClass({
 
     },
     render: function() {
-        var style = {
-            color: 'green'
-        };
-
-
         return(
             <div className="room-main" >
-                <div className="online-est">
-                    <h2 className="room-head">Room Details
-                        <button onClick={this.handleSubmit} className="rednew-btn"><i className="fa fa-plus-circle"></i> Save All</button>&nbsp;
-                        <a href="javascript:void(0);" onClick={this.appendInput} className="rednew-btn"><i className="fa fa-plus-circle"></i> Add Room</a>
-                    </h2>
-                    <ReduxForm.Form id='myform' onSubmit={v => console.log(v)}>
-                    <ReactFileUpload.Uploader url='/upload' checkType={true}/>
+              <h2 className="room-head">Many fields form</h2>
+              <a href="javascript:void(0);" onClick={this.appendInput} className='btn btn-primary'><i className="fa fa-plus-circle"></i> Add more field</a>
+              <ReactReduxForm.Form id='myform' model="user" onSubmit={this.handleSubmit}>
+              <br/>
+              {this.state.inputs.map(function(item){
+                  return (
+                          <div className="form-group" key={item} id={item}>
+                            <label className="control-label">Name</label>
+                            <ReactReduxForm.Control type={getControl(item)} className="form-control my-form-control" model={getModel(item)} placeholder={getModel(item)}/>
+                            <a href="javascript:void(0)" className="btn btn-danger"><i className="fa fa-remove"></i></a>
+                          </div>
+                  )
 
-                    <ReactS3Uploader
-                      signingUrl="/s3_signin"
-                      signingUrlMethod="GET"
-                      accept="image/*"
-                      preprocess={this.onUploadStart}
-                      onProgress={this.onUploadProgress}
-                      onError={this.onUploadError}
-                      onFinish={this.onUploadFinish}
-
-                      signingUrlWithCredentials={ true } // in case when need to pass authentication credentials via CORS
-                      uploadRequestHeaders={{ 'x-amz-acl': 'public-read' }}  // this is the default
-                      contentDisposition="auto"
-                      scrubFilename={(filename) => filename.replace(/[^\w\d_\-\.]+/ig, '')}
-                      server="http://localhost:4000" />
-
-
-                   {this.state.inputs.map(function(item){
-                        return (
-                                <div className="room-form" key={item} id={item}>
-                                    {item}
-                                    <a href="" className="remove"><i className="fa fa-remove"></i></a>
-                                    <ul>
-                                        <li>
-                                            <label>Name <span className="red">*</span></label>
-                                            <input type="text" name={'name'+item} defaultValue={item} />
-
-                                        </li>
-
-                                    </ul>
-                                </div>
-                        )
-
-                   })}
-                   <button type="submit">AAA</button>
-                   </ReduxForm.Form>
-                </div>
+             })}
+             <button type="submit" className='btn btn-primary'>Save All</button>
+             </ReactReduxForm.Form>
             </div>
         );
     }
 });
 
-// Decorate the form component
-Demo = ReduxForm.reduxForm({
-  form: 'contact' // a unique name for this form
-})(Demo);
 
 ReactDOM.render(
    <ReactRedux.Provider store={store}>
