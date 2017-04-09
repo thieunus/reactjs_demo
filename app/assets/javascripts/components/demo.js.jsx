@@ -17,17 +17,41 @@ getControl = function(item){
   var array = ["text", "text", "email", "file", "text", "text", "address.city", "text", "text"]
   return array[item];
 }
+
+appendFormData = function(formData, values, parent){
+  for(var i in values){
+    value = values[i];
+    if(parent){
+      inputName = parent + "[" + i + "]"
+    }else {
+      inputName = i;
+    }
+    if(typeof(value) == "string"){
+      formData.append(inputName, value);
+    }else if(Array.isArray(value)){
+      for(var j in value){
+        formData.append(inputName + "[" + j + "]", value[j]);
+      }
+    }
+    else if(typeof(value)=="object"){
+      appendFormData(formData, value, i)
+    }
+  }
+}
 var Demo = React.createClass({
     getInitialState: function() {
         //this.removeRecord = this.removeRecord.bind(this);
         return {inputs:[0,1]};
     },
-    //  constructor: function(props){
-    //     super(props);
-    //     this.removeRecord = this.removeRecord.bind(this);
-    // },
-    handleSubmit: function(v) {
-        console.log(v);
+    handleSubmit: function(values) {
+      console.log(values);
+      formData = new FormData();
+      appendFormData(formData, values, null);
+      console.log(formData);
+      config = {
+        headers: { 'content-type': 'multipart/form-data' }
+      }
+      Axios.post("/upload", formData, config)
     },
     removeRecord: function(index){
         this.state.inputs.splice(index, 1);
@@ -57,8 +81,8 @@ var Demo = React.createClass({
               <br/>
               {this.state.inputs.map(function(item){
                   return (
-                          <div className="form-group" id={item}>
-                            <label className="control-label">Name</label>
+                          <div className="form-group" id={item} key={item}>
+                            <label className="control-label">Name </label>
                             <ReactReduxForm.Control type={getControl(item)} className="form-control my-form-control" model={getModel(item)} placeholder={getModel(item)}/>
                             <a href="javascript:void(0)" className="btn btn-danger" onClick={self.removeRecord}><i className="fa fa-remove"></i></a>
                           </div>
