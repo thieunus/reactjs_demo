@@ -30,9 +30,7 @@ var Demo = React.createClass({
         console.log(v);
     },
     removeRecord: function(index){
-        e.preventDefault();
-
-        this.state.inputs.splice(index, 1)
+        this.state.inputs.splice(index, 1);
         this.setState({ inputs: this.state.inputs},function(){
             return;
         });
@@ -50,6 +48,7 @@ var Demo = React.createClass({
 
     },
     render: function() {
+        var self = this;
         return(
             <div className="room-main" >
               <h2 className="room-head">Many fields form</h2>
@@ -58,10 +57,10 @@ var Demo = React.createClass({
               <br/>
               {this.state.inputs.map(function(item){
                   return (
-                          <div className="form-group" key={item} id={item}>
+                          <div className="form-group" id={item}>
                             <label className="control-label">Name</label>
                             <ReactReduxForm.Control type={getControl(item)} className="form-control my-form-control" model={getModel(item)} placeholder={getModel(item)}/>
-                            <a href="javascript:void(0)" className="btn btn-danger"><i className="fa fa-remove"></i></a>
+                            <a href="javascript:void(0)" className="btn btn-danger" onClick={self.removeRecord}><i className="fa fa-remove"></i></a>
                           </div>
                   )
 
